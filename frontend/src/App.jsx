@@ -1,0 +1,10 @@
+import { useCallback, useEffect, useState } from 'react';
+import { api } from './api';
+import LaptopTable from './components/LaptopTable'; import Scraper from './components/Scraper'; import PricePrediction from './components/PricePrediction'; import Classification from './components/Classification'; import Recommendation from './components/Recommendation';
+const price = value => `₹${Number(value || 0).toLocaleString('en-IN')}`;
+export default function App() {
+  const [stats, setStats] = useState(null), [laptops, setLaptops] = useState([]), [error, setError] = useState(''), [loading, setLoading] = useState(true);
+  const refreshData = useCallback(async () => { setLoading(true); setError(''); try { const [newStats, newLaptops] = await Promise.all([api.getStats(), api.getLaptops()]); setStats(newStats); setLaptops(Array.isArray(newLaptops) ? newLaptops : []); } catch (err) { setError(err.message); } finally { setLoading(false); } }, []);
+  useEffect(() => { refreshData(); }, [refreshData]);
+  return <main><header><div><h1>Laptop Price Lab</h1><p>Amazon listings, feature extraction, and machine-learning tools.</p></div><button className="secondary" onClick={refreshData} disabled={loading}>{loading ? 'Loading…' : 'Refresh data'}</button></header>{error && <div className="error" role="alert">{error}<button onClick={refreshData}>Try again</button></div>}{loading ? <p className="status">Loading dashboard…</p> : <>{stats && <section className="stats">{[['Laptops', stats.count], ['Average price', price(stats.average_price)], ['Cheapest', price(stats.minimum_price)], ['Most expensive', price(stats.maximum_price)], ['Average rating', stats.average_rating || '—'], ['Brands', stats.brands?.length || 0]].map(([label, value]) => <article key={label}><small>{label}</small><strong>{value}</strong></article>)}</section>}<Scraper onComplete={refreshData}/><LaptopTable laptops={laptops}/><section className="tools"><PricePrediction/><Classification/><Recommendation/></section></>}</main>;
+}

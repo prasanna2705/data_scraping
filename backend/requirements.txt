@@ -1,0 +1,9 @@
+flask
+flask-cors
+selenium
+beautifulsoup4
+pandas
+numpy
+scikit-learn
+joblib
+pytest

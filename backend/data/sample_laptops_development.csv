@@ -1,0 +1,17 @@
+title,price,rating,ram_gb,storage_gb,processor_score,gpu_score,screen_size,brand,recommended,search_term,asin,product_url,image_url,availability
+Development Sample Acer Aspire 3,35990,3.9,8,512,3,0,15.6,Acer,0,development
+Development Sample HP 15,42990,4.0,8,512,5,0,15.6,HP,1,development
+Development Sample Lenovo IdeaPad Slim,48990,4.1,16,512,5,0,15.6,Lenovo,1,development
+Development Sample ASUS Vivobook,52990,4.2,16,512,5,0,14,ASUS,1,development
+Development Sample Dell Inspiron,57990,4.0,16,512,5,0,15.6,Dell,1,development
+Development Sample MSI Modern,62990,4.1,16,1024,5,0,14,MSI,1,development
+Development Sample HP Pavilion,67990,4.2,16,512,7,0,14,HP,1,development
+Development Sample Lenovo LOQ,74990,4.3,16,512,7,5,15.6,Lenovo,1,development
+Development Sample ASUS TUF,82990,4.4,16,512,7,6,15.6,ASUS,1,development
+Development Sample Acer Nitro,88990,4.2,16,1024,7,6,15.6,Acer,1,development
+Development Sample Dell G15,94990,4.1,16,1024,7,7,15.6,Dell,1,development
+Development Sample HP Omen,104990,4.3,16,1024,7,7,16.1,HP,1,development
+Development Sample Lenovo Legion,114990,4.5,32,1024,7,8,16,Lenovo,1,development
+Development Sample ASUS ROG,129990,4.4,32,1024,9,8,16,ASUS,1,development
+Development Sample MSI Stealth,144990,4.3,32,1024,9,9,16,MSI,1,development
+Development Sample Apple MacBook,159990,4.6,16,512,7,0,14,Apple,1,development
