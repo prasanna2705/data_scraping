@@ -12,3 +12,4 @@ backend/.pytest_cache/
 .DS_Store
 Thumbs.db
 .sf/
+echo "node_modules" >> .gitignore
