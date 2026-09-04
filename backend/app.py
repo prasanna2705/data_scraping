@@ -6,6 +6,7 @@ import logging
 import numpy as np
 import pandas as pd
 from flask import Flask, jsonify, request
+from werkzeug.exceptions import HTTPException
 from flask_cors import CORS
 
 from datasets import is_active_source, list_sources, load_dataset, normalize_source_key, source_label, source_path
@@ -51,14 +52,16 @@ def input_features(payload: dict) -> pd.DataFrame:
 
 @app.errorhandler(Exception)
 def handle_error(error):
-    status = 400 if isinstance(error, ValueError) else 404 if isinstance(error, FileNotFoundError) else 500
-    if status >= 500:
-        app.logger.exception("API error: %s", error)
-    message = str(error) if status < 500 else (
-        "The server could not complete this request. Please try again later."
-    )
-    return jsonify(error=message if status >= 500 else str(error)), status
+    if isinstance(error, HTTPException):
+        return jsonify(error=error.description), error.code
 
+    if isinstance(error, ValueError):
+        return jsonify(error=str(error)), 400
+
+    app.logger.exception("API error: %s", error)
+    return jsonify(
+        error="The server could not complete this request. Please try again later."
+    ), 500
 
 @app.get("/api/health")
 def health():
@@ -423,7 +426,12 @@ def data_quality():
         features_extracted=len(FEATURES),
         data_sources=[source_label(source)] if len(raw) else [],
     )
-
+@app.get("/")
+def home():
+    return jsonify(
+        status="ok",
+        message="Laptop Intelligence API is running"
+    )
 
 @app.get("/api/analytics")
 def analytics():
