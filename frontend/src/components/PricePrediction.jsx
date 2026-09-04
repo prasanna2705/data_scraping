@@ -1,2 +1,0 @@
-import { useState } from 'react'; import { api } from '../api'; import { FeatureForm } from './Form';
-export default function PricePrediction() { const [result,setResult]=useState(''); const submit=async v=>{setResult('Calculating…');try {const j=await api.predictPrice(v);setResult(`Predicted price: ₹${j.predicted_price.toLocaleString('en-IN')}`)} catch(e) {setResult(e.message)}};return <article><h2>Price prediction</h2><FeatureForm submitText="Predict price" onSubmit={submit}/><output>{result}</output></article> }

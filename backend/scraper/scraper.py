@@ -1,34 +1,28 @@
-"""Amazon-only scraper for product URLs already stored in the catalog CSV."""
+"""Amazon HTML helpers retained for unit tests and low-level extraction."""
+from __future__ import annotations
+
 import csv
 import json
 import logging
-import random
 import re
-import shutil
-import tempfile
-import time
 from pathlib import Path
 from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.common.exceptions import TimeoutException, WebDriverException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 
 from utils.feature_extraction import extract_features
 
 LOGGER = logging.getLogger(__name__)
-DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "laptops.csv"
-PROFILE_ROOT = Path(__file__).resolve().parents[1] / ".selenium-profiles"
-FIELDS = ("title", "price", "rating", "ram_gb", "storage_gb", "processor_score",
-          "gpu_score", "screen_size", "brand", "recommended", "search_term",
-          "asin", "product_url", "image_url", "availability")
+DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "scraped" / "amazon" / "laptops.csv"
+FIELDS = (
+    "title", "price", "rating", "ram_gb", "storage_gb", "processor_score",
+    "gpu_score", "screen_size", "brand", "recommended", "search_term",
+    "asin", "product_url", "image_url", "availability", "storage_type", "cpu", "gpu",
+    "processor", "source", "source_url", "scraped_at",
+)
 
 
 def is_amazon_product_url(value):
-    """Accept only HTTP(S) Amazon India product URLs; never accept arbitrary URLs."""
     try:
         parsed = urlparse(str(value).strip())
     except (TypeError, ValueError):
@@ -40,52 +34,6 @@ def is_amazon_product_url(value):
 def extract_asin(url):
     match = re.search(r"/(?:dp|gp/product)/([A-Z0-9]{10})(?:[/?]|$)", url, re.IGNORECASE)
     return match.group(1).upper() if match else ""
-
-
-def stored_amazon_urls(filename=DATA_PATH):
-    """Read product URLs from the existing catalog storage, without inventing any."""
-    path = Path(filename)
-    if not path.exists():
-        return [], 0
-    with path.open(encoding="utf-8", newline="") as file:
-        rows = list(csv.DictReader(file))
-    urls = [str(row.get("product_url") or "").strip() for row in rows if str(row.get("product_url") or "").strip()]
-    return urls, len(urls)
-
-
-def chrome_options(profile_dir):
-    options = webdriver.ChromeOptions()
-    options.add_argument("--headless=new")
-    options.add_argument("--window-size=1440,1200")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--remote-debugging-port=0")
-    options.add_argument(f"--user-data-dir={profile_dir}")
-    return options
-
-
-def fetch_page_selenium(url, timeout=20):
-    """Fetch one stored URL with an isolated profile and guaranteed driver cleanup."""
-    PROFILE_ROOT.mkdir(exist_ok=True)
-    profile_dir = tempfile.mkdtemp(prefix="scrape-", dir=PROFILE_ROOT)
-    driver = None
-    try:
-        # Selenium Manager selects the matching locally cached/installed driver.
-        driver = webdriver.Chrome(options=chrome_options(profile_dir))
-        driver.get(url)
-        WebDriverWait(driver, timeout).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#productTitle, #ppd")))
-        return driver.page_source
-    except TimeoutException as exc:
-        raise RuntimeError("Amazon product content did not load in time.") from exc
-    except WebDriverException as exc:
-        LOGGER.debug("Chrome failure for %s", url, exc_info=True)
-        raise RuntimeError("Selenium could not start Chrome or open Amazon. Close Chrome and retry.") from exc
-    finally:
-        if driver is not None:
-            driver.quit()
-        try:
-            shutil.rmtree(profile_dir)
-        except OSError as error:
-            LOGGER.warning("Could not remove temporary Chrome profile %s: %s", profile_dir, error)
 
 
 def _json_ld_product(soup):
@@ -116,7 +64,6 @@ def _text(soup, *selectors):
 
 
 def extract_product(html, product_url):
-    """Extract a resilient subset of product-page data; missing fields are safe."""
     soup = BeautifulSoup(html, "html.parser")
     structured = _json_ld_product(soup)
     title = _text(soup, "#productTitle", "h1.a-size-large") or str(structured.get("name", "")).strip()
@@ -134,7 +81,9 @@ def extract_product(html, product_url):
         "product_url": product_url,
         "image_url": image.get("src", "") if image else str(structured.get("image", "") or ""),
         "availability": _text(soup, "#availability span") or str(offers.get("availability", "") or ""),
-        "search_term": "stored_amazon_url",
+        "search_term": "amazon",
+        "source": "Amazon",
+        "processor": features.get("cpu") or "",
     })
     return features
 
@@ -158,7 +107,6 @@ def save_rows(rows, filename=DATA_PATH):
 
 
 def upsert_products(products, filename=DATA_PATH):
-    """Update existing ASIN/URL rows and add new products without duplicates."""
     rows = _read_rows(filename)
     by_key = {}
     for index, row in enumerate(rows):
@@ -184,29 +132,18 @@ def upsert_products(products, filename=DATA_PATH):
 
 
 def scrape_stored_products(filename=DATA_PATH):
-    """Scrape every valid stored Amazon URL; a failed URL never stops the batch."""
-    urls, total_urls = stored_amazon_urls(filename)
-    if not urls:
-        return {"success": False, "message": "No Amazon URLs are available for scraping.", "total_urls": 0, "successful_urls": 0, "failed_urls": 0, "products_found": 0, "inserted": 0, "updated": 0}
-    products, successful, failed = [], 0, 0
-    for url in urls:
-        if not is_amazon_product_url(url):
-            LOGGER.warning("Skipping invalid/non-Amazon stored URL: %s", url)
-            failed += 1
-            continue
-        try:
-            products.append(extract_product(fetch_page_selenium(url), url))
-            successful += 1
-        except RuntimeError as error:
-            failed += 1
-            LOGGER.warning("Stored URL scrape failed for %s: %s", url, error)
-        time.sleep(random.uniform(1, 2))
-    inserted, updated = upsert_products(products, filename) if products else (0, 0)
-    success = successful > 0
-    message = "Scraping completed successfully" if failed == 0 else "Scraping completed with some errors" if success else "Scraping failed"
-    return {"success": success, "message": message, "total_urls": total_urls, "successful_urls": successful, "failed_urls": failed, "products_found": len(products), "inserted": inserted, "updated": updated}
+    """Legacy no-op batch path — prefer /api/scrape with a query/URL."""
+    return {
+        "success": False,
+        "message": "No Amazon URLs are available for scraping.",
+        "total_urls": 0,
+        "successful_urls": 0,
+        "failed_urls": 0,
+        "products_found": 0,
+        "inserted": 0,
+        "updated": 0,
+    }
 
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    print(scrape_stored_products())
+def fetch_page_selenium(url, timeout=20):
+    raise RuntimeError("Selenium page fetch is disabled in favour of HTTP adapters.")

@@ -1,0 +1,138 @@
+{
+  "source": "amazon",
+  "dataset_source": "Amazon",
+  "rows": 49,
+  "training_rows": 36,
+  "testing_rows": 13,
+  "features": [
+    "ram_gb",
+    "storage_gb",
+    "processor_score",
+    "gpu_score",
+    "screen_size",
+    "rating",
+    "brand"
+  ],
+  "reliable": true,
+  "reliability_note": null,
+  "min_rows_for_metrics": 25,
+  "category_thresholds": {
+    "budget_max": 49990.0,
+    "mid_max": 82980.4
+  },
+  "linear_regression": {
+    "mae": 49846.24,
+    "rmse": 64592.4,
+    "r2": 0.655
+  },
+  "random_forest": {
+    "mae": 24338.57,
+    "rmse": 31770.19,
+    "r2": 0.917
+  },
+  "random_forest_regressor": {
+    "mae": 24338.57,
+    "rmse": 31770.19,
+    "r2": 0.917
+  },
+  "classification": {
+    "accuracy": 0.769,
+    "precision": 0.84,
+    "recall": 0.769,
+    "f1": 0.787
+  },
+  "random_forest_classifier": {
+    "accuracy": 0.769,
+    "precision": 0.84,
+    "recall": 0.769,
+    "f1": 0.787
+  },
+  "recommendation": {
+    "algorithm": "K-Nearest Neighbors",
+    "neighbors": 5,
+    "features": [
+      "ram_gb",
+      "storage_gb",
+      "processor_score",
+      "gpu_score",
+      "screen_size",
+      "rating",
+      "price"
+    ],
+    "note": "Recommendations return the nearest real laptops from the active source using Euclidean distance on scaled features."
+  },
+  "best_model": "Random Forest Regressor",
+  "last_trained": "2026-09-04T16:14:30.203347+00:00",
+  "actual_vs_predicted": [
+    {
+      "actual": 54990.0,
+      "predicted": 48234.59
+    },
+    {
+      "actual": 94990.0,
+      "predicted": 126934.67
+    },
+    {
+      "actual": 85500.0,
+      "predicted": 65530.95
+    },
+    {
+      "actual": 32990.0,
+      "predicted": 33805.84
+    },
+    {
+      "actual": 59290.0,
+      "predicted": 50525.53
+    },
+    {
+      "actual": 194990.0,
+      "predicted": 256460.0
+    },
+    {
+      "actual": 222990.0,
+      "predicted": 261340.0
+    },
+    {
+      "actual": 342490.0,
+      "predicted": 365713.33
+    },
+    {
+      "actual": 155999.0,
+      "predicted": 95288.0
+    },
+    {
+      "actual": 35630.0,
+      "predicted": 37700.08
+    },
+    {
+      "actual": 367900.0,
+      "predicted": 358306.67
+    },
+    {
+      "actual": 82990.0,
+      "predicted": 126934.67
+    },
+    {
+      "actual": 39890.0,
+      "predicted": 48679.62
+    }
+  ],
+  "algorithms": [
+    {
+      "name": "Linear Regression",
+      "purpose": "Price Prediction"
+    },
+    {
+      "name": "Random Forest Regressor",
+      "purpose": "Price Prediction"
+    },
+    {
+      "name": "Random Forest Classifier",
+      "purpose": "Classification"
+    },
+    {
+      "name": "KNN",
+      "purpose": "Recommendation"
+    }
+  ]
+}

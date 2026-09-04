@@ -1,2 +1,0 @@
-import { useState } from 'react'; import { api } from '../api'; import { FeatureForm } from './Form';
-export default function Classification() { const [result,setResult]=useState(''); const submit=async v=>{setResult('Classifying…');try {const j=await api.classify(v);setResult(`${j.category} (${Math.round((j.probability || 0)*100)}% confidence)`)} catch(e) {setResult(e.message)}};return <article><h2>Category classification</h2><FeatureForm submitText="Classify laptop" onSubmit={submit}/><output>{result}</output></article> }

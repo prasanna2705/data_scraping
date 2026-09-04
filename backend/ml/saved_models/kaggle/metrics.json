@@ -1,0 +1,246 @@
+{
+  "source": "kaggle",
+  "dataset_source": "Kaggle",
+  "rows": 1018,
+  "training_rows": 763,
+  "testing_rows": 255,
+  "features": [
+    "ram_gb",
+    "storage_gb",
+    "processor_score",
+    "gpu_score",
+    "screen_size",
+    "rating",
+    "brand"
+  ],
+  "reliable": true,
+  "reliability_note": null,
+  "min_rows_for_metrics": 25,
+  "category_thresholds": {
+    "budget_max": 39373.92,
+    "mid_max": 69153.79
+  },
+  "linear_regression": {
+    "mae": 14268.28,
+    "rmse": 19412.78,
+    "r2": 0.687
+  },
+  "random_forest": {
+    "mae": 11251.35,
+    "rmse": 16041.82,
+    "r2": 0.787
+  },
+  "random_forest_regressor": {
+    "mae": 11251.35,
+    "rmse": 16041.82,
+    "r2": 0.787
+  },
+  "classification": {
+    "accuracy": 0.788,
+    "precision": 0.789,
+    "recall": 0.788,
+    "f1": 0.789
+  },
+  "random_forest_classifier": {
+    "accuracy": 0.788,
+    "precision": 0.789,
+    "recall": 0.788,
+    "f1": 0.789
+  },
+  "recommendation": {
+    "algorithm": "K-Nearest Neighbors",
+    "neighbors": 5,
+    "features": [
+      "ram_gb",
+      "storage_gb",
+      "processor_score",
+      "gpu_score",
+      "screen_size",
+      "rating",
+      "price"
+    ],
+    "note": "Recommendations return the nearest real laptops from the active source using Euclidean distance on scaled features."
+  },
+  "best_model": "Random Forest Regressor",
+  "last_trained": "2026-09-04T16:23:42.031253+00:00",
+  "actual_vs_predicted": [
+    {
+      "actual": 69210.72,
+      "predicted": 72323.12
+    },
+    {
+      "actual": 10442.88,
+      "predicted": 19302.07
+    },
+    {
+      "actual": 30316.32,
+      "predicted": 31917.12
+    },
+    {
+      "actual": 10602.72,
+      "predicted": 13982.37
+    },
+    {
+      "actual": 59461.55,
+      "predicted": 71764.96
+    },
+    {
+      "actual": 48618.0,
+      "predicted": 33031.31
+    },
+    {
+      "actual": 35111.52,
+      "predicted": 30510.38
+    },
+    {
+      "actual": 43956.0,
+      "predicted": 40682.02
+    },
+    {
+      "actual": 106187.04,
+      "predicted": 102943.45
+    },
+    {
+      "actual": 22857.12,
+      "predicted": 27785.09
+    },
+    {
+      "actual": 47686.13,
+      "predicted": 62509.51
+    },
+    {
+      "actual": 81912.14,
+      "predicted": 75041.98
+    },
+    {
+      "actual": 26053.92,
+      "predicted": 23816.52
+    },
+    {
+      "actual": 59087.52,
+      "predicted": 60333.52
+    },
+    {
+      "actual": 85194.72,
+      "predicted": 68220.79
+    },
+    {
+      "actual": 95850.72,
+      "predicted": 100195.41
+    },
+    {
+      "actual": 63882.72,
+      "predicted": 64851.53
+    },
+    {
+      "actual": 58288.32,
+      "predicted": 65027.88
+    },
+    {
+      "actual": 53386.56,
+      "predicted": 43297.84
+    },
+    {
+      "actual": 95850.72,
+      "predicted": 86958.35
+    },
+    {
+      "actual": 24455.52,
+      "predicted": 24712.2
+    },
+    {
+      "actual": 109277.28,
+      "predicted": 66966.89
+    },
+    {
+      "actual": 22111.2,
+      "predicted": 27398.38
+    },
+    {
+      "actual": 49177.44,
+      "predicted": 57432.88
+    },
+    {
+      "actual": 18594.72,
+      "predicted": 22586.32
+    },
+    {
+      "actual": 35111.52,
+      "predicted": 26882.26
+    },
+    {
+      "actual": 141138.72,
+      "predicted": 98739.77
+    },
+    {
+      "actual": 58554.72,
+      "predicted": 65027.88
+    },
+    {
+      "actual": 66546.72,
+      "predicted": 60333.52
+    },
+    {
+      "actual": 42570.72,
+      "predicted": 52442.22
+    },
+    {
+      "actual": 101232.0,
+      "predicted": 104025.36
+    },
+    {
+      "actual": 59513.23,
+      "predicted": 52442.22
+    },
+    {
+      "actual": 77202.72,
+      "predicted": 88139.97
+    },
+    {
+      "actual": 101178.72,
+      "predicted": 101996.21
+    },
+    {
+      "actual": 22697.28,
+      "predicted": 21831.45
+    },
+    {
+      "actual": 35111.52,
+      "predicted": 40240.42
+    },
+    {
+      "actual": 25521.12,
+      "predicted": 43113.53
+    },
+    {
+      "actual": 73473.12,
+      "predicted": 69590.71
+    },
+    {
+      "actual": 21791.52,
+      "predicted": 22865.41
+    },
+    {
+      "actual": 26586.72,
+      "predicted": 29019.24
+    }
+  ],
+  "algorithms": [
+    {
+      "name": "Linear Regression",
+      "purpose": "Price Prediction"
+    },
+    {
+      "name": "Random Forest Regressor",
+      "purpose": "Price Prediction"
+    },
+    {
+      "name": "Random Forest Classifier",
+      "purpose": "Classification"
+    },
+    {
+      "name": "KNN",
+      "purpose": "Recommendation"
+    }
+  ]
+}

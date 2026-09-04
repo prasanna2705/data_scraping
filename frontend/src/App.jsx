@@ -1,10 +1,79 @@
-import { useCallback, useEffect, useState } from 'react';
-import { api } from './api';
-import LaptopTable from './components/LaptopTable'; import Scraper from './components/Scraper'; import PricePrediction from './components/PricePrediction'; import Classification from './components/Classification'; import Recommendation from './components/Recommendation';
-const price = value => `₹${Number(value || 0).toLocaleString('en-IN')}`;
+import { NavLink, Route, Routes } from 'react-router-dom';
+import { SourceProvider, useSource } from './context/SourceContext';
+import Home from './pages/Home';
+import Dataset from './pages/Dataset';
+import WebScraping from './pages/WebScraping';
+import Catalog from './pages/Catalog';
+import Prediction from './pages/Prediction';
+import Classification from './pages/Classification';
+import Recommendation from './pages/Recommendation';
+import MLAnalysis from './pages/MLAnalysis';
+
+const NAV = [
+  ['/', 'Home'],
+  ['/dataset', 'Dataset'],
+  ['/scraping', 'Web Scraping'],
+  ['/catalog', 'Catalog'],
+  ['/prediction', 'Prediction'],
+  ['/classification', 'Classification'],
+  ['/recommendation', 'Recommendation'],
+  ['/ml-analysis', 'ML Analysis'],
+];
+
+function Shell() {
+  const { source, meta, error, setSource } = useSource();
+  return (
+    <>
+      <aside>
+        <div className="brand">
+          <h1>Laptop<span>IQ</span></h1>
+          <p>Intelligence platform</p>
+        </div>
+        <nav>
+          {NAV.map(([to, label]) => (
+            <NavLink key={to} to={to} end={to === '/'}>
+              {label}
+            </NavLink>
+          ))}
+        </nav>
+        <div className="source-switch">
+          <label>
+            Active source
+            <select value={source} onChange={(event) => setSource(event.target.value)}>
+              <option value="kaggle">Kaggle</option>
+              <option value="amazon">Amazon</option>
+              <option value="flipkart" disabled>
+                Flipkart — Coming Soon
+              </option>
+              <option value="oneplus" disabled>
+                Croma — Coming Soon
+              </option>
+            </select>
+          </label>
+          <small>{meta.records ?? 0} records</small>
+        </div>
+      </aside>
+      <main>
+        {error && <div className="banner error top">{error}</div>}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/dataset" element={<Dataset />} />
+          <Route path="/scraping" element={<WebScraping />} />
+          <Route path="/catalog" element={<Catalog />} />
+          <Route path="/prediction" element={<Prediction />} />
+          <Route path="/classification" element={<Classification />} />
+          <Route path="/recommendation" element={<Recommendation />} />
+          <Route path="/ml-analysis" element={<MLAnalysis />} />
+        </Routes>
+      </main>
+    </>
+  );
+}
+
 export default function App() {
-  const [stats, setStats] = useState(null), [laptops, setLaptops] = useState([]), [error, setError] = useState(''), [loading, setLoading] = useState(true);
-  const refreshData = useCallback(async () => { setLoading(true); setError(''); try { const [newStats, newLaptops] = await Promise.all([api.getStats(), api.getLaptops()]); setStats(newStats); setLaptops(Array.isArray(newLaptops) ? newLaptops : []); } catch (err) { setError(err.message); } finally { setLoading(false); } }, []);
-  useEffect(() => { refreshData(); }, [refreshData]);
-  return <main><header><div><h1>Laptop Price Lab</h1><p>Amazon listings, feature extraction, and machine-learning tools.</p></div><button className="secondary" onClick={refreshData} disabled={loading}>{loading ? 'Loading…' : 'Refresh data'}</button></header>{error && <div className="error" role="alert">{error}<button onClick={refreshData}>Try again</button></div>}{loading ? <p className="status">Loading dashboard…</p> : <>{stats && <section className="stats">{[['Laptops', stats.count], ['Average price', price(stats.average_price)], ['Cheapest', price(stats.minimum_price)], ['Most expensive', price(stats.maximum_price)], ['Average rating', stats.average_rating || '—'], ['Brands', stats.brands?.length || 0]].map(([label, value]) => <article key={label}><small>{label}</small><strong>{value}</strong></article>)}</section>}<Scraper onComplete={refreshData}/><LaptopTable laptops={laptops}/><section className="tools"><PricePrediction/><Classification/><Recommendation/></section></>}</main>;
+  return (
+    <SourceProvider>
+      <Shell />
+    </SourceProvider>
+  );
 }
