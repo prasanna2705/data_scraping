@@ -1,5 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL ;
-
+const API_URL = import.meta.env.VITE_API_URL + "/api";
+console.log("API_URL is:", API_URL);
 async function request(path, options = {}) {
   let response;
   try {
